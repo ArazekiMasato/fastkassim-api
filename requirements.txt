@@ -3,3 +3,5 @@ uvicorn
 spacy
 Cython
 nltk
+requests
+zss
