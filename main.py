@@ -1,25 +1,26 @@
-# main.py
-
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
+import uvicorn
 import sys
 import os
 
-# FastKASSIMモジュールのパスを追加（相対パス）
 sys.path.append(os.path.join(os.path.dirname(__file__), "FastKASSIM"))
 
-import fkassim.FastKassim as fkassim
+from fkassim import FastKassim as fk
 
 app = FastAPI()
 
-# FastKASSIMの初期化
-fastkassim = fkassim.FastKassim(fkassim.FastKassim.LTK)
-
-class InputData(BaseModel):
+class TextPair(BaseModel):
     text1: str
     text2: str
 
-@app.post("/syntax_score")
-async def syntax_score(data: InputData):
-    score = fastkassim.compute_similarity(data.text1, data.text2)
+# 初期化（LTK: Label Tree Kernel）
+FastKassim = fk.FastKassim(fk.FastKassim.LTK)
+
+@app.post("/similarity")
+def get_similarity(pair: TextPair):
+    score = FastKassim.compute_similarity(pair.text1, pair.text2)
     return {"score": score}
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
