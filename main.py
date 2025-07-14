@@ -1,7 +1,8 @@
+# main.py
 from fastapi import FastAPI
 from pydantic import BaseModel
 import spacy
-from FastKASSIM import FastKASSIM
+from FastKASSIM import FastKASSIM  # ← フォルダから直接読み込み
 
 app = FastAPI()
 nlp = spacy.load("en_core_web_sm")
