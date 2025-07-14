@@ -1,18 +1,25 @@
 # main.py
+
 from fastapi import FastAPI
 from pydantic import BaseModel
-import spacy
-from FastKASSIM import FastKASSIM  # ← フォルダから直接読み込み
+import sys
+import os
+
+# FastKASSIMモジュールのパスを追加（相対パス）
+sys.path.append(os.path.join(os.path.dirname(__file__), "FastKASSIM"))
+
+import fkassim.FastKassim as fkassim
 
 app = FastAPI()
-nlp = spacy.load("en_core_web_sm")
-kassim = FastKASSIM(nlp)
+
+# FastKASSIMの初期化
+fastkassim = fkassim.FastKassim(fkassim.FastKassim.LTK)
 
 class InputData(BaseModel):
-    sentence1: str
-    sentence2: str
+    text1: str
+    text2: str
 
 @app.post("/syntax_score")
-def syntax_score(data: InputData):
-    score = kassim.similarity(data.sentence1, data.sentence2)
-    return {"syntax_score": score}
+async def syntax_score(data: InputData):
+    score = fastkassim.compute_similarity(data.text1, data.text2)
+    return {"score": score}
